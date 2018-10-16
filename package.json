@@ -2,9 +2,19 @@
   "name": "express-ethereal-boilerplate",
   "version": "0.0.1",
   "description": "Super lightweight starter kit with basic example",
+  "scripts": {
+    "start:dev": "nodemon src/main.js",
+    "start:prod": "node src/main.js"
+  },
   "main": "src/main.js",
   "repository": "git@github.com:mainset/express-ethereal-boilerplate.git",
   "author": "Yevhen Uzhva <yevhen.uzhva@gmail.com>",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
+  }
 }
