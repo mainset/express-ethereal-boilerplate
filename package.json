@@ -1,6 +1,6 @@
 {
   "name": "express-ethereal-boilerplate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Super lightweight starter kit with basic example",
   "scripts": {
     "start:dev": "nodemon src/main.js",
