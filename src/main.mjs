@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+
+import apiRouter from './api-router.mjs';
+
 const app = express();
 const port = process.env.PORT || 3000;
-
-const apiRouter = require('./api-router');
 
 const handleForwardingToLatestApiPrefix = (req, res, next) => {
   const isReqUrlStartsWithApiPrefix = /^(\/api\/v1)/.test(req.url);

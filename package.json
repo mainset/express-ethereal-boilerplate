@@ -3,8 +3,8 @@
   "version": "0.0.3",
   "description": "Super lightweight starter kit with basic example",
   "scripts": {
-    "start:dev": "nodemon src/main.js",
-    "start:prod": "node src/main.js"
+    "start:dev": "nodemon src/main.mjs",
+    "start:prod": "node src/main.mjs"
   },
   "main": "src/main.js",
   "repository": "git@github.com:mainset/express-ethereal-boilerplate.git",
