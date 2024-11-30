@@ -1,6 +1,6 @@
 import express from 'express';
 
-import apiV1 from './v1.mjs';
+import apiV1 from './v1';
 
 const expressRouter = express.Router();
 

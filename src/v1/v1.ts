@@ -1,8 +1,8 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 
 const expressRouter = express.Router();
 
-const apiV1 = expressRouter.get('/', (req, res) => {
+const apiV1 = expressRouter.get('/', (req: Request, res: Response) => {
   return res.json({ welcomeMessage: 'API v1: Hello World!' });
 });
 

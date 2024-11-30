@@ -3,8 +3,9 @@
   "version": "0.0.3",
   "description": "Super lightweight starter kit with basic example",
   "scripts": {
-    "start:dev": "nodemon src/main.mjs",
-    "start:prod": "node src/main.mjs"
+    "start:dev": "tsx watch ./src/main.ts",
+    "start:prod": "node dist/main.js",
+    "build": "tsc"
   },
   "main": "src/main.js",
   "repository": "git@github.com:mainset/express-ethereal-boilerplate.git",
@@ -15,6 +16,9 @@
     "express": "^4.21.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   }
 }

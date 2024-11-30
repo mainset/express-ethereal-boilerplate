@@ -1,6 +1,6 @@
 import express from 'express';
 
-import v1Router from './v1/index.mjs';
+import v1Router from './v1/index';
 
 const expressRouter = express.Router();
 
