@@ -7,7 +7,7 @@ import {
 
 const getPgAllDbTables = () => {
   return dbPgBoilerplatePool.query(
-    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"
+    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'",
   );
 };
 
@@ -15,8 +15,8 @@ const getKyselyAllDbTables = () => {
   return dbPgBoilerplateKysely.executeQuery(
     CompiledQuery.raw(
       "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'",
-      []
-    )
+      [],
+    ),
   );
 };
 

@@ -25,9 +25,9 @@ services:
         condition: service_healthy
     # make the service available under custom domain on local computer
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.server.rule=Host(`express-boilerplate.mainset.${DEV__DOMAIN_LOCALHOST:-localhost}`)"
-      - "traefik.http.services.server.loadbalancer.server.port=3000"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.server.rule=Host(`express-boilerplate.mainset.${DEV__DOMAIN_LOCALHOST:-localhost}`)'
+      - 'traefik.http.services.server.loadbalancer.server.port=3000'
     networks:
       - network--dev
   api--express-dev:
@@ -51,7 +51,7 @@ services:
     expose:
       - 5432
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: ['CMD', 'pg_isready']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -62,11 +62,11 @@ services:
     env_file:
       - ./.env.development
     ports:
-      - "8081:80"
+      - '8081:80'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.mainset.${DEV__DOMAIN_LOCALHOST:-localhost}`)"
-      - "traefik.http.services.pgadmin.loadbalancer.server.port=80"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.pgadmin.rule=Host(`pgadmin.mainset.${DEV__DOMAIN_LOCALHOST:-localhost}`)'
+      - 'traefik.http.services.pgadmin.loadbalancer.server.port=80'
     networks:
       - network--dev
 
@@ -75,13 +75,13 @@ services:
   traefik:
     image: traefik:v2.5
     command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--entrypoints.web.address=:80'
     ports:
-      - "80:80"
+      - '80:80'
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
     networks:
       - network--dev
 
