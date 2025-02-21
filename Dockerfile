@@ -17,6 +17,10 @@ RUN --mount=type=cache,target=/root/.npm \
 
 WORKDIR /usr/src/api-express
 
+# prepare scripts for execution
+COPY ./db-scripts /usr/local/bin/db-scripts
+RUN chmod +x /usr/local/bin/db-scripts/*.sh
+
 ################################################################################
 # Create a stage for installing production dependencies.
 FROM base AS install-dependencies
@@ -52,8 +56,13 @@ USER node
 
 # Copy compiled {/dist} code from the {build} Docker stage into the image.
 COPY --chown=node:node --from=build /usr/src/api-express/dist ./dist
-# Copy required files to launch the application
+# Copy other required files and folders to launch the application
 COPY ./package.json ./
+# DB migrations with {kysely-ctl}
+COPY ./kysely.config.ts ./
+COPY ./src/config/database.ts ./src/config/database.ts
+
+ENTRYPOINT ["/usr/local/bin/db-scripts/migrate-latest.sh"]
 
 # Expose the port that the application listens on.
 EXPOSE 3000
@@ -73,6 +82,8 @@ USER node
 
 # Copy the rest of the source files into the image.
 COPY . .
+
+ENTRYPOINT ["/usr/local/bin/db-scripts/migrate-latest.sh"]
 
 # Expose the port that the application listens on.
 EXPOSE 3000
