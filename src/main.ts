@@ -1,12 +1,12 @@
+import express, { NextFunction, Request, Response } from 'express';
+
+import { apiV1Routes } from './api-v1';
+
 const path = require('path');
 // !IMPORTANT: load environment variables before importing environment based configs
 require('dotenv').config({
   path: process.env.NODE_ENV && path.join(`./.env.${process.env.NODE_ENV}`),
 });
-
-import express, { NextFunction, Request, Response } from 'express';
-
-import { apiV1Routes } from './api-v1';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 const handleForwardingToLatestApiPrefix = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const isReqUrlStartsWithApiPrefix = /^(\/api\/v1)/.test(req.url);
   if (!isReqUrlStartsWithApiPrefix) {
