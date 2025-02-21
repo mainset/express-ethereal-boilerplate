@@ -3,9 +3,10 @@
   "version": "0.0.3",
   "description": "Super lightweight starter kit with basic example",
   "scripts": {
-    "start:dev": "tsx watch ./src/main.ts",
-    "start:prod": "node dist/main.js",
-    "build": "tsc"
+    "start:dev": "nodemon ./src/main.ts",
+    "start:prod": "node ./dist/src/main.js",
+    "build": "tsc",
+    "db:migrate-latest": "npx kysely-ctl migrate:latest --env production"
   },
   "main": "src/main.js",
   "repository": "git@github.com:mainset/express-ethereal-boilerplate.git",
@@ -18,7 +19,11 @@
     "@types/pg": "^8.11.11",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "tsx": "^4.19.3",
+    "kysely": "^0.27.5",
+    "kysely-ctl": "^0.11.1",
+    "nodemon": "^3.1.9",
+    "pg": "^8.13.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
   "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
