@@ -1,13 +1,15 @@
 import express from 'express';
 
-import { dbTableRoutes } from './db-tables';
-import { v1Routes } from './v1.routes';
+import { AuthRoute } from './auth';
+import { UserRoute } from './users';
+import { WelcomeRoute } from './welcome';
 
 const expressRouter = express.Router();
 
 const apiV1Routes = expressRouter.use('/v1', [
-  v1Routes,
-  dbTableRoutes,
+  AuthRoute,
+  UserRoute,
+  WelcomeRoute,
   // NOTE: put other v1 routes here
 ]);
 
