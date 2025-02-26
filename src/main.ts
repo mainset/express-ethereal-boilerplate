@@ -1,6 +1,9 @@
+import cookieParser from 'cookie-parser';
 import express, { NextFunction, Request, Response } from 'express';
+import passport from 'passport';
 
 import { apiV1Routes } from './api-v1';
+import * as PassportConfig from './config/passport';
 
 const path = require('path');
 // !IMPORTANT: load environment variables before importing environment based configs
@@ -23,7 +26,18 @@ const handleForwardingToLatestApiPrefix = (
   next('route');
 };
 
+// parsers
+app.use(cookieParser(process.env.SECURITY__COOKIE_SECRET)); // parse cookie to get JWT from {req.cookies} or {req.signedCookies}
+app.use(express.json()); // parse application/json to get from {req.body}
+// authentication
+app.use(passport.initialize());
+
+PassportConfig.initialize();
+
 app.get('/*', handleForwardingToLatestApiPrefix);
+app.post('/*', handleForwardingToLatestApiPrefix);
+app.patch('/*', handleForwardingToLatestApiPrefix);
+app.delete('/*', handleForwardingToLatestApiPrefix);
 
 app.use('/api', [apiV1Routes]);
 

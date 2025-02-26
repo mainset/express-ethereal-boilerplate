@@ -1,6 +1,8 @@
 import { Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 
+import type { DatabaseBoilerplate } from './database.types';
+
 // postgres pool setup
 const DB_CREDENTIAL_BY_KEY = {
   POSTGRES_HOST: process.env.POSTGRES_HOST,
@@ -26,7 +28,7 @@ const dialect = new PostgresDialect({
 // knows your database structure.
 // Dialect is passed to Kysely's constructor, and from now on, Kysely knows how
 // to communicate with your database.
-const dbPgBoilerplateKysely = new Kysely({
+const dbPgBoilerplateKysely = new Kysely<DatabaseBoilerplate>({
   dialect,
 });
 

@@ -24,3 +24,37 @@ docker compose --profile dev up --build
 # prod server static files
 docker compose --profile prod up --build
 ```
+
+### Project structure example
+
+```
+/backend
+│── /src
+│   │── /api
+│   │   │── /controllers      # 🚀 Route handlers (business logic)
+│   │   │── /routes           # 🌍 Define API routes
+│   │   │── /middlewares      # 🛑 Request processing logic (auth, validation)
+│   │   │── /services         # 🔄 Business logic / processing
+│   │   │── /repositories     # 💾 Database access layer
+│   │   │── /models           # 📄 Database models / entities
+│   │   │── /validators       # ✅ Request validation logic
+│   │   │── /decorators       # 🎀 Reusable metadata-based utilities
+│   │   │── /utils            # 🛠️ Utility/helper functions
+│   │   │── /constants        # 📌 App-wide constants
+│   │   │── /types            # 🏷️ TypeScript type definitions
+│   │   │── /events           # 🎧 Event-based logic (if using event emitters)
+│   │── /config               # ⚙️ Configuration (env, database, etc.)
+│   │── /core                 # 🏗️ Core framework-level utilities
+│   │── /infra                # 🏢 Infrastructure (e.g., database, queue setup)
+│   │── /scripts              # 📜 CLI scripts (e.g., migrations, seeders)
+│   │── /tests                # 🧪 Tests (unit & integration)
+│   ├── app.ts                # 🎬 Main app entry point
+│   ├── server.ts             # 🚀 Server startup logic
+│── /migrations               # 🏛️ Database migrations
+│── /seeders                  # 🌱 Database seed scripts
+│── /logs                     # 📜 Log files
+│── .env                      # 🌎 Environment variables
+│── package.json              # 📦 Dependencies & scripts
+│── tsconfig.json             # 🏷️ TypeScript config
+│── README.md                 # 📖 Documentation
+```
