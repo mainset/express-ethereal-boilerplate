@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 
 import { UserService } from './user.service';
 
@@ -7,10 +8,10 @@ const postUserRegister = async (req: Request, res: Response) => {
     // Check if user exists
     const existingUser = await UserService.findByEmail(req.body.email);
     if (existingUser) {
-      res.status(400).json({
+      res.status(StatusCodes.BAD_REQUEST).json({
         error: {
-          code: 400,
-          message: 'Email already registered',
+          code: 'BAD_REQUEST',
+          message: ReasonPhrases.BAD_REQUEST,
         },
       });
       return;
@@ -22,17 +23,17 @@ const postUserRegister = async (req: Request, res: Response) => {
       password: req.body.password,
     });
 
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
       id: user.id,
       email: user.email,
     });
   } catch (error) {
     console.error('Registration error:', error);
 
-    res.status(500).json({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       error: {
-        code: 500,
-        message: 'Internal server error',
+        code: 'INTERNAL_SERVER_ERROR',
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
       },
     });
   }

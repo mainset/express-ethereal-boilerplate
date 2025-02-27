@@ -4,6 +4,7 @@ import { Strategy as JwtStrategy } from 'passport-jwt';
 
 const COOKIE__JWT_KEY_NAME__BY_ID = {
   ACCESS_TOKEN: 'access_token',
+  REFRESH_TOKEN: 'refresh_token',
 };
 
 // middleware to authenticate requests
