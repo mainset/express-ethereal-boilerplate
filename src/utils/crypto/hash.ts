@@ -2,6 +2,20 @@ import * as argon2 from 'argon2';
 import crypto from 'crypto';
 
 class Hash {
+  /**
+   * Hash a string using SHA-256
+   * @param value - The string to hash
+   * @returns The hashed string
+   */
+  static async make(value: string): Promise<string> {
+    return crypto.createHash('sha256').update(value).digest('hex');
+  }
+
+  /**
+   * Hash a password using Argon2id
+   * @param password - The password to hash
+   * @returns The hashed
+   */
   static async password(password: string): Promise<string> {
     return argon2.hash(password, {
       type: argon2.argon2id,

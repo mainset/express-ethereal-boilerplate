@@ -10,8 +10,17 @@ interface UserTable {
   created_at: Generated<Date>;
 }
 
+interface RefreshTokenTable {
+  id: Generated<string>;
+  user_id: string;
+  token_hash: string;
+  expires_at: Date;
+  is_revoked: Generated<boolean>;
+  created_at: Generated<Date>;
+}
 interface DatabaseBoilerplate {
   users: UserTable;
+  refresh_tokens: RefreshTokenTable;
 }
 
 export type { DatabaseBoilerplate, UserTable };

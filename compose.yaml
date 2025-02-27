@@ -37,6 +37,9 @@ services:
     env_file:
       - ./.env.development
     volumes:
+      # Bind Mount code for Live Update
+      - ./db-scripts:/usr/src/api-express/db-scripts
+      - ./migrations:/usr/src/api-express/migrations
       - ./src:/usr/src/api-express/src
       - /usr/src/api-express/node_modules
     profiles: [dev]

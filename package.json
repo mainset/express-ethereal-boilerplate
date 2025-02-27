@@ -6,7 +6,8 @@
     "start:dev": "nodemon ./src/main.ts",
     "start:prod": "node ./dist/src/main.js",
     "build": "tsc",
-    "db:migrate-latest": "npx kysely-ctl migrate:latest --env production"
+    "db:migrate-latest": "npx kysely-ctl migrate:latest --env production",
+    "db-cleanup:expired-tokens": "ts-node ./db-scripts/cleanup-expired-tokens.ts"
   },
   "main": "src/main.js",
   "repository": "git@github.com:mainset/express-ethereal-boilerplate.git",
@@ -26,6 +27,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
+    "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "kysely": "^0.27.5",
     "kysely-ctl": "^0.11.1",
