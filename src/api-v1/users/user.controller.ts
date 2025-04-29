@@ -24,7 +24,7 @@ const postUserRegister = async (req: Request, res: Response) => {
     });
 
     res.status(StatusCodes.CREATED).json({
-      id: user.id,
+      public_id: user.public_id,
       email: user.email,
     });
   } catch (error) {

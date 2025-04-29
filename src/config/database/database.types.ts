@@ -1,7 +1,8 @@
 import type { Generated } from 'kysely';
 
 interface UserTable {
-  id: Generated<string>;
+  id: Generated<number>;
+  public_id: string;
   email_encrypted: string;
   email_iv: string;
   email_tag: string;
@@ -12,7 +13,7 @@ interface UserTable {
 
 interface RefreshTokenTable {
   id: Generated<string>;
-  user_id: string;
+  user_public_id: UserTable['public_id'];
   token_hash: string;
   expires_at: Date;
   is_revoked: Generated<boolean>;

@@ -11,11 +11,9 @@ export async function up(db: Kysely<DatabaseBoilerplate>): Promise<void> {
 
   await db.schema
     .createTable('refresh_tokens')
-    .addColumn('id', 'uuid', (col) =>
-      col.primaryKey().defaultTo(sql`gen_random_uuid()`),
-    )
-    .addColumn('user_id', 'uuid', (col) =>
-      col.notNull().references('users.id').onDelete('cascade'),
+    .addColumn('id', 'serial', (col) => col.primaryKey())
+    .addColumn('user_public_id', 'varchar(32)', (col) =>
+      col.notNull().references('users.public_id').onDelete('cascade'),
     )
     .addColumn('token_hash', 'varchar(255)', (col) => col.notNull().unique()) // Store only hashed token
     .addColumn('expires_at', sql`timestamp with time zone`, (col) =>
@@ -31,7 +29,7 @@ export async function up(db: Kysely<DatabaseBoilerplate>): Promise<void> {
   await db.schema
     .createIndex('idx_refresh_tokens_user')
     .on('refresh_tokens')
-    .column('user_id')
+    .column('user_public_id')
     .execute();
 
   // Compound index for active token lookups

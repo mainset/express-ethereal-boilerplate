@@ -1,22 +1,23 @@
 import crypto from 'crypto';
+import type { Selectable } from 'kysely';
 
-import { dbPgBoilerplateKysely } from '../../config/database';
+import { UserTable, dbPgBoilerplateKysely } from '../../config/database';
 import { Hash } from '../../utils';
 
 interface TokenInfo {
-  user_id: string;
+  user_public_id: Selectable<UserTable>['public_id'];
   expires_at: Date;
 }
 
 class RefreshTokenService {
   /**
    * Creates a new refresh token for a user
-   * @param userId - The user's ID
+   * @param userPublicId - The user's ID
    * @param expiresInSeconds - Token expiration time in seconds
    * @returns The plain refresh token (to be sent to client)
    */
   static async create(
-    userId: string,
+    userPublicId: Selectable<UserTable>['public_id'],
     expiresInSeconds: number,
   ): Promise<string> {
     // Generate random token
@@ -32,7 +33,7 @@ class RefreshTokenService {
     await dbPgBoilerplateKysely
       .insertInto('refresh_tokens')
       .values({
-        user_id: userId,
+        user_public_id: userPublicId,
         token_hash: tokenHash,
         expires_at: expiresAt,
       })
@@ -46,14 +47,16 @@ class RefreshTokenService {
    * @param token - The refresh token to verify
    * @returns The associated user ID if valid, null otherwise
    */
-  static async verify(token: string): Promise<string | null> {
+  static async verify(
+    token: string,
+  ): Promise<Selectable<UserTable>['public_id'] | null> {
     // Get token hash using the same method as in create()
     const tokenHash = await Hash.make(token);
 
     // Find token in database
     const storedToken = await dbPgBoilerplateKysely
       .selectFrom('refresh_tokens')
-      .select(['user_id', 'token_hash', 'is_revoked'])
+      .select(['user_public_id', 'token_hash', 'is_revoked'])
       .where('token_hash', '=', tokenHash) // Compare hashes directly
       .where('expires_at', '>', new Date())
       .where('is_revoked', '=', false)
@@ -64,19 +67,19 @@ class RefreshTokenService {
       return null;
     }
 
-    return storedToken[0].user_id;
+    return storedToken[0].user_public_id;
   }
 
   /**
    * Gets the original token info for a refresh token
-   * @param userId - The user's ID
+   * @param userPublicId - The user's ID
    */
   static async getTokenInfo(token: string): Promise<TokenInfo | null> {
     const tokenHash = await Hash.make(token);
 
     const result = await dbPgBoilerplateKysely
       .selectFrom('refresh_tokens')
-      .select(['user_id', 'expires_at'])
+      .select(['user_public_id', 'expires_at'])
       .where('token_hash', '=', tokenHash)
       .executeTakeFirst();
 
@@ -85,13 +88,15 @@ class RefreshTokenService {
 
   /**
    * Revokes all refresh tokens for a user
-   * @param userId - The user's ID
+   * @param userPublicId - The user's ID
    */
-  static async revokeAllForUser(userId: string): Promise<void> {
+  static async revokeAllForUser(
+    userPublicId: Selectable<UserTable>['public_id'],
+  ): Promise<void> {
     await dbPgBoilerplateKysely
       .updateTable('refresh_tokens')
       .set({ is_revoked: true })
-      .where('user_id', '=', userId)
+      .where('user_public_id', '=', userPublicId)
       .execute();
   }
 
