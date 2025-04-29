@@ -4,8 +4,11 @@ import jwt from 'jsonwebtoken';
 import type { Selectable } from 'kysely';
 
 import { UserTable } from '../../config/database';
-import { COOKIE__JWT_KEY_NAME__BY_ID } from '../../config/passport';
-import { Hash } from '../../utils';
+import {
+  COOKIE__JWT_KEY_NAME__BY_ID,
+  cookieJwtExtractor,
+} from '../../config/passport';
+import { Encryption, Hash } from '../../utils';
 import { RefreshTokenService } from '../refresh-tokens';
 import { UserService } from '../users/user.service';
 
@@ -17,6 +20,12 @@ interface TokenTimes {
 interface TokenPair {
   accessToken: string;
   refreshToken: string;
+}
+
+interface JWTPayload {
+  sub: Selectable<UserTable>['public_id']; // Subject (user public ID)
+  exp: number; // Expiration time in seconds
+  iss: 'express-ethereal-boilerplate'; // Issuer
 }
 
 const getTokenExpirationTimes = (isRememberMe = false): TokenTimes => ({
@@ -41,7 +50,7 @@ const generateTokens = async (
     tokenTimes.accessTokenExpireTimeMs / 1000,
   );
 
-  const payload = {
+  const payload: JWTPayload = {
     // Registered claims (standardized)
     sub: userPublicId, // Subject (user ID)
     exp: currentTimeInSeconds + expireTimeInSeconds, // Expiration
@@ -104,6 +113,53 @@ const setTokenCookies = (
     // path: '/api/v1/auth/refresh', // Restrict to refresh endpoint
     // domain: 'yourdomain.com', // Optional: Restricts cookie to a specific domain
   });
+};
+
+const getAuthMe = async (req: Request, res: Response) => {
+  try {
+    // Get access token from signed cookies
+    const accessToken = cookieJwtExtractor(req);
+
+    // Verify and decode the token
+    const decoded = jwt.verify(
+      accessToken,
+      process.env.SECURITY__JWT_SECRET!,
+    ) as JWTPayload;
+
+    // Get user from database using public_id
+    const currentUser = await UserService.findByPublicId(decoded.sub);
+
+    if (!currentUser) {
+      res.status(StatusCodes.NOT_FOUND).json({
+        error: {
+          code: 'USER_NOT_FOUND',
+          message: 'User not found',
+        },
+      });
+      return;
+    }
+
+    // Return user data (same format as login response)
+    res.status(StatusCodes.OK).json({
+      user: {
+        id: currentUser.public_id,
+        email: Encryption.decrypt(
+          currentUser.email_encrypted,
+          currentUser.email_iv,
+          currentUser.email_tag,
+        ),
+      },
+    });
+  } catch (error) {
+    console.error('Current user error', error);
+
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR,
+      },
+    });
+  }
 };
 
 const postLogin = async (req: Request, res: Response) => {
@@ -283,4 +339,4 @@ const postRefreshToken = async (req: Request, res: Response) => {
   }
 };
 
-export { postLogin, postLogout, postRefreshToken };
+export { getAuthMe, postLogin, postLogout, postRefreshToken };

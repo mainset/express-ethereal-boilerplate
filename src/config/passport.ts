@@ -47,5 +47,6 @@ function initializeStrategies() {
 export {
   authenticatedRequest,
   COOKIE__JWT_KEY_NAME__BY_ID,
+  cookieJwtExtractor,
   initializeStrategies,
 };
