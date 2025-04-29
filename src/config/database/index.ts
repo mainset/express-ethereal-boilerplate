@@ -1,2 +1,2 @@
 export { dbPgBoilerplateKysely, dbPgBoilerplatePool } from './database';
-export type { DatabaseBoilerplate } from './database.types';
+export type { DatabaseBoilerplate, UserTable } from './database.types';

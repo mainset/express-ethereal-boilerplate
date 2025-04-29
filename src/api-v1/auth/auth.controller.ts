@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
+import type { Selectable } from 'kysely';
 
+import { UserTable } from '../../config/database';
 import { COOKIE__JWT_KEY_NAME__BY_ID } from '../../config/passport';
 import { Hash } from '../../utils';
 import { RefreshTokenService } from '../refresh-tokens';
@@ -23,14 +25,14 @@ const getTokenExpirationTimes = (isRememberMe = false): TokenTimes => ({
   // refreshTokenExpireTimeMs: 20 * 1000, // 20 seconds
 
   // For production
-  accessTokenExpireTimeMs: 15 * 60, // 15 minutes
+  accessTokenExpireTimeMs: 15 * 60 * 1000, // 15 minutes
   refreshTokenExpireTimeMs: isRememberMe
     ? 30 * 24 * 60 * 60 * 1000 // 30 days
     : 24 * 60 * 60 * 1000, // 1 day
 });
 
 const generateTokens = async (
-  userId: string,
+  userPublicId: Selectable<UserTable>['public_id'],
   tokenTimes: TokenTimes,
 ): Promise<TokenPair> => {
   const currentTimeInSeconds = Math.floor(Date.now() / 1000);
@@ -41,7 +43,7 @@ const generateTokens = async (
 
   const payload = {
     // Registered claims (standardized)
-    sub: userId, // Subject (user ID)
+    sub: userPublicId, // Subject (user ID)
     exp: currentTimeInSeconds + expireTimeInSeconds, // Expiration
     iss: 'express-ethereal-boilerplate', // Issuer
     // iat: currentTimeInSeconds, // Issued at
@@ -62,7 +64,7 @@ const generateTokens = async (
   const accessToken = jwt.sign(payload, process.env.SECURITY__JWT_SECRET!);
   // Convert milliseconds to seconds for refresh token
   const refreshToken = await RefreshTokenService.create(
-    userId,
+    userPublicId,
     // !IMPORTANT: convert milliseconds to seconds
     Math.floor(tokenTimes.refreshTokenExpireTimeMs / 1000),
   );
@@ -123,6 +125,7 @@ const postLogin = async (req: Request, res: Response) => {
       req.body.password,
       user.password_hash,
     );
+
     if (!isValidPassword) {
       res.status(StatusCodes.UNAUTHORIZED).json({
         error: {
@@ -134,13 +137,13 @@ const postLogin = async (req: Request, res: Response) => {
     }
 
     const tokenTimes = getTokenExpirationTimes(req.body.is_remember_me);
-    const tokens = await generateTokens(user.id, tokenTimes);
+    const tokens = await generateTokens(user.public_id, tokenTimes);
 
     setTokenCookies(res, tokens, tokenTimes);
 
     res.status(StatusCodes.OK).json({
       user: {
-        id: user.id,
+        id: user.public_id,
         email: req.body.email,
       },
       // auth: {
@@ -211,8 +214,8 @@ const postRefreshToken = async (req: Request, res: Response) => {
     }
 
     // Verify token and get user ID
-    const userId = await RefreshTokenService.verify(refreshToken);
-    if (!userId) {
+    const userPublicId = await RefreshTokenService.verify(refreshToken);
+    if (!userPublicId) {
       res.status(StatusCodes.UNAUTHORIZED).json({
         error: {
           code: 'INVALID_REFRESH_TOKEN',
@@ -256,7 +259,7 @@ const postRefreshToken = async (req: Request, res: Response) => {
     };
 
     // Generate new tokens
-    const tokens = await generateTokens(userId, tokenTimes);
+    const tokens = await generateTokens(userPublicId, tokenTimes);
 
     // Implement token rotation
     await RefreshTokenService.revoke(refreshToken);

@@ -1,5 +1,11 @@
 # express ethereal boilerplate
 
+- [Starting dev server](#starting-dev-server)
+- [DB migrations](#db-migrations)
+- [Project structure example](#project-structure-example)
+
+### Starting dev server
+
 The applications is dockerized and it starts via docker.
 
 The correct Docker profiler is required!
@@ -23,6 +29,16 @@ NOTE: remember to `--build` Docker image for cases when changes been made in `Do
 docker compose --profile dev up --build
 # prod server static files
 docker compose --profile prod up --build
+```
+
+### DB migrations
+
+As the applications dockerized, the migrations should be run inside the Docker container.
+
+From the root of the project or `/dockerized` project folder, run:
+
+```bash
+docker compose exec api--express-dev pnpm run db:migrate-latest
 ```
 
 ### Project structure example

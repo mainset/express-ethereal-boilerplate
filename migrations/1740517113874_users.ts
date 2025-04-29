@@ -11,9 +11,10 @@ export async function up(db: Kysely<DatabaseBoilerplate>): Promise<void> {
 
   await db.schema
     .createTable('users')
-    .addColumn('id', 'uuid', (col) =>
-      col.primaryKey().defaultTo(sql`gen_random_uuid()`),
-    )
+    // Internal ID for database use
+    .addColumn('id', 'serial', (col) => col.primaryKey())
+    // Public ID for URLs and external use
+    .addColumn('public_id', 'varchar(32)', (col) => col.unique().notNull())
     // Email storage, hashed and encrypted data
     .addColumn('email_encrypted', 'varchar(512)', (col) => col.notNull()) // Encrypted email
     .addColumn('email_iv', 'varchar(24)', (col) => col.notNull()) // Store IV (Initialization Vector for decryption)

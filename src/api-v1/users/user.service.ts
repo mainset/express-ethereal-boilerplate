@@ -1,5 +1,5 @@
 import { dbPgBoilerplateKysely } from '../../config/database';
-import { Encryption, Hash } from '../../utils';
+import { Encryption, Hash, IdTransformer } from '../../utils';
 
 interface CreateUserData {
   email: string;
@@ -7,7 +7,7 @@ interface CreateUserData {
 }
 
 interface UserResponse {
-  id: string;
+  public_id: string;
   email: string;
 }
 
@@ -26,6 +26,8 @@ class UserService {
     const user = await dbPgBoilerplateKysely
       .insertInto('users')
       .values({
+        // Temporary public_id that will be updated
+        public_id: 'TEMPORARY_PUBLIC_ID',
         email_encrypted: encrypted,
         email_iv: iv,
         email_tag: tag,
@@ -39,9 +41,19 @@ class UserService {
       throw new Error('Failed to create user');
     }
 
+    // Generate public_id from internal ID for external use in URLs
+    const publicId = IdTransformer.encode(user.id, 'usr');
+
+    // Update user with public_id
+    await dbPgBoilerplateKysely
+      .updateTable('users')
+      .set({ public_id: publicId })
+      .where('id', '=', user.id)
+      .execute();
+
     // Return decrypted user data
     return {
-      id: user.id,
+      public_id: user.public_id,
       email: Encryption.decrypt(
         user.email_encrypted,
         user.email_iv,

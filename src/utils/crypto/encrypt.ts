@@ -13,7 +13,7 @@ const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
 
 class Encryption {
   private static getEncryptionKey(): Buffer {
-    const encryptionKey = process.env.SECURITY__ENCRYPTION_KEY;
+    const encryptionKey = process.env.SECURITY__ENCRYPTION_KEY__MEDIUM_32;
 
     if (!encryptionKey) {
       throw new Error('Encryption key is not set');

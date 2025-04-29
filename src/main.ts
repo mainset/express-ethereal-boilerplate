@@ -4,11 +4,18 @@ import passport from 'passport';
 
 import { apiV1Routes } from './api-v1';
 import * as PassportConfig from './config/passport';
+import { IdTransformer, validateEnv } from './utils';
 
 const path = require('path');
 // !IMPORTANT: load environment variables before importing environment based configs
 require('dotenv').config({
   path: process.env.NODE_ENV && path.join(`./.env.${process.env.NODE_ENV}`),
+});
+
+const processValidatedEnv = validateEnv();
+
+IdTransformer.init({
+  salt: processValidatedEnv.SECURITY__ENCRYPTION_KEY__WEAK_8,
 });
 
 const app = express();
