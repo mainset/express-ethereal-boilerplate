@@ -73,6 +73,21 @@ class UserService {
 
     return user;
   }
+
+  /**
+   * Find user by their public ID
+   * @param publicId - The public ID of the user (e.g., 'usr_abc123')
+   * @returns User record if found, undefined otherwise
+   */
+  static async findByPublicId(publicId: string) {
+    const user = await dbPgBoilerplateKysely
+      .selectFrom('users')
+      .where('public_id', '=', publicId)
+      .selectAll()
+      .executeTakeFirst();
+
+    return user;
+  }
 }
 
 export { UserService };
